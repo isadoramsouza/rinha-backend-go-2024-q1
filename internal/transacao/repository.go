@@ -84,7 +84,7 @@ func (r *repository) GetExtrato(ctx context.Context, id int) (domain.Extrato, er
 	if err != nil {
 		return domain.Extrato{}, err
 	}
-	query := `SELECT valor, tipo, descricao, realizada_em FROM transacoes t where cliente_id = $1 LIMIT 10;`
+	query := `SELECT valor, tipo, descricao, realizada_em FROM transacoes t where cliente_id = $1 ORDER BY realizada_em DESC LIMIT 10;`
 	rows, err := r.db.Query(ctx, query, id)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
