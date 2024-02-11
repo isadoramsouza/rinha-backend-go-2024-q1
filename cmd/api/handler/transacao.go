@@ -68,7 +68,7 @@ func (t *TransacaoController) CreateTransaction() gin.HandlerFunc {
 			Valor:     input.Valor,
 		}
 
-		response, err := t.transacaoService.CreateTransaction(c, newTransacao, id)
+		response, err := t.transacaoService.CreateTransaction(c, newTransacao)
 		if err != nil {
 			if err.Error() == ErrNotFound.Error() {
 				web.Error(c, http.StatusNotFound, ErrNotFound.Error())

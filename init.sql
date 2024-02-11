@@ -16,7 +16,7 @@ BEGIN
         cliente_id INTEGER NOT NULL,
         realizada_em TIMESTAMP NOT NULL DEFAULT NOW()
     );
-    CREATE INDEX idx_cliente_id ON public.transacoes (cliente_id);
+    CREATE INDEX idx_cliente_id ON transacoes (cliente_id);
 
     -- Inserção de valores iniciais na tabela clientes
     INSERT INTO clientes (nome, limite, saldo)
@@ -27,3 +27,22 @@ BEGIN
         ('Bob', 10000000, 0),
         ('Tom', 500000, 0);
 END $$;
+
+-- Criar função para atualizar saldo
+CREATE OR REPLACE FUNCTION atualizar_saldo()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.tipo = 'd' THEN
+        UPDATE clientes SET saldo = saldo - NEW.valor WHERE id = NEW.cliente_id;
+    ELSE
+        UPDATE clientes SET saldo = saldo + NEW.valor WHERE id = NEW.cliente_id;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Criar trigger para executar a função após inserção de uma nova transação
+CREATE TRIGGER atualizar_saldo_trigger
+AFTER INSERT ON transacoes
+FOR EACH ROW
+EXECUTE FUNCTION atualizar_saldo();
