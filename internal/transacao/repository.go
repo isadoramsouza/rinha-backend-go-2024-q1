@@ -47,7 +47,7 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 
 	// Atualização do saldo do cliente
 	_, err = tx.Exec(ctx,
-		"UPDATE public.clientes SET saldo = $1 WHERE id = $2 FOR UPDATE",
+		"UPDATE public.clientes SET saldo = $1 WHERE id = $2",
 		saldo, t.ClienteID)
 	if err != nil {
 		return err
