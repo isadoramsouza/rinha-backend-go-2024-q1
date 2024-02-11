@@ -24,11 +24,6 @@ type TransacaoRequest struct {
 	Descricao string `json:"descricao" validate:"required,len=10"`
 }
 
-type TransacaoResponse struct {
-	Limite int64 `json:"limite"`
-	Saldo  int64 `json:"saldo"`
-}
-
 func (t *TransacaoRequest) Validate() error {
 
 	if (t.Tipo != "c" && t.Tipo != "d") || (len(t.Descricao) < 1 || len(t.Descricao) > 10) {
@@ -66,29 +61,6 @@ func (t *TransacaoController) CreateTransaction() gin.HandlerFunc {
 
 		id, _ := strconv.Atoi(c.Param("id"))
 
-		cliente, err := t.transacaoService.GetBalance(c, id)
-		if err != nil {
-			if err.Error() == ErrNotFound.Error() {
-				web.Error(c, http.StatusNotFound, ErrNotFound.Error())
-				return
-			}
-			web.Error(c, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		var newBalance int64
-
-		if "d" == input.Tipo {
-			newBalance = cliente.Saldo - input.Valor
-		} else {
-			newBalance = cliente.Saldo + input.Valor
-		}
-
-		if (cliente.Limite + newBalance) < 0 {
-			web.Error(c, http.StatusUnprocessableEntity, LimitErr.Error())
-			return
-		}
-
 		newTransacao := domain.Transacao{
 			ClienteID: id,
 			Tipo:      input.Tipo,
@@ -96,17 +68,21 @@ func (t *TransacaoController) CreateTransaction() gin.HandlerFunc {
 			Valor:     input.Valor,
 		}
 
-		err = t.transacaoService.CreateTransaction(c, newTransacao, newBalance)
+		response, err := t.transacaoService.CreateTransaction(c, newTransacao, id)
 		if err != nil {
+			if err.Error() == ErrNotFound.Error() {
+				web.Error(c, http.StatusNotFound, ErrNotFound.Error())
+				return
+			}
+			if err.Error() == LimitErr.Error() {
+				web.Error(c, http.StatusUnprocessableEntity, LimitErr.Error())
+				return
+			}
 			web.Error(c, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		newTransacaoResponse := TransacaoResponse{
-			Limite: cliente.Limite,
-			Saldo:  newBalance,
-		}
-		web.Success(c, http.StatusOK, newTransacaoResponse)
+		web.Success(c, http.StatusOK, response)
 	}
 }
 

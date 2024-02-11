@@ -10,3 +10,8 @@ type Transacao struct {
 	ClienteID   int       `json:"cliente_id"`
 	RealizadaEm time.Time `json:"realizada_em"`
 }
+
+type TransacaoResponse struct {
+	Limite int64 `json:"limite"`
+	Saldo  int64 `json:"saldo"`
+}
