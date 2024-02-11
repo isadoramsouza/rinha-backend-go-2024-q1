@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/internal/domain"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -42,7 +43,12 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 		"INSERT INTO transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
 		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
 	if err != nil {
-		return domain.TransacaoResponse{}, err
+		// Verificar se o erro é relacionado ao limite excedido
+		pgErr, ok := err.(*pgconn.PgError)
+		if ok && pgErr.Message == "Débito excede o limite do cliente" { // Código do erro específico para limite excedido
+			return domain.TransacaoResponse{}, LimitErr
+		}
+		return domain.TransacaoResponse{}, err // Retornar outros erros
 	}
 
 	// Commit da transação
