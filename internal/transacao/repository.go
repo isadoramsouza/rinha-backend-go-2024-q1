@@ -38,7 +38,7 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, id
 	}
 	defer tx.Rollback(ctx)
 
-	query := "SELECT limite, saldo FROM clientes WHERE id=$1 FOR UPDATE;"
+	query := "SELECT limite, saldo FROM clientes WHERE id=$1;"
 	row := r.db.QueryRow(ctx, query, id)
 	c := domain.Cliente{}
 	var respLimite, respSaldo int64
