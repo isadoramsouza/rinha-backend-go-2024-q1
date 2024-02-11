@@ -37,8 +37,8 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 	}
 	defer tx.Rollback(ctx)
 
-	// Trava a linha do cliente para evitar concorrência
-	_, err = tx.Exec(ctx, "SELECT id FROM public.clientes WHERE id = $1 FOR UPDATE", t.ClienteID)
+	// Adquire uma trava externa para garantir que as transações sejam aplicadas sequencialmente
+	_, err = tx.Exec(ctx, "SELECT id FROM public.lock_table FOR UPDATE")
 	if err != nil {
 		return err
 	}
