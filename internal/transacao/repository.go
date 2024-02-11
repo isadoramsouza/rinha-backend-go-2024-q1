@@ -32,12 +32,6 @@ func NewRepository(db *pgxpool.Pool) Repository {
 }
 
 func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, id int) (domain.TransacaoResponse, error) {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return domain.TransacaoResponse{}, err
-	}
-	defer tx.Rollback(ctx)
-
 	query := "SELECT limite, saldo FROM clientes WHERE id=$1 FOR UPDATE;"
 	row := r.db.QueryRow(ctx, query, id)
 	c := domain.Cliente{}
@@ -52,6 +46,12 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, id
 
 	c.Limite = respLimite
 	c.Saldo = respSaldo
+
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return domain.TransacaoResponse{}, err
+	}
+	defer tx.Rollback(ctx)
 
 	var newBalance int64
 
