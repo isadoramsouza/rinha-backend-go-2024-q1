@@ -37,6 +37,12 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 	}
 	defer tx.Rollback(ctx)
 
+	// Trava a linha do cliente para evitar concorrência
+	_, err = tx.Exec(ctx, "SELECT id FROM public.clientes WHERE id = $1 FOR UPDATE", t.ClienteID)
+	if err != nil {
+		return err
+	}
+
 	_, err = tx.Exec(ctx,
 		"INSERT INTO public.transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
 		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
