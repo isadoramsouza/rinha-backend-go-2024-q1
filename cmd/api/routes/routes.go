@@ -2,7 +2,10 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/isadoramsouza/rinha-backend-go-2024-q1/cmd/api/handler"
+	"github.com/isadoramsouza/rinha-backend-go-2024-q1/internal/transacao"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/rueidis"
 )
 
 type Router interface {
@@ -10,9 +13,10 @@ type Router interface {
 }
 
 type router struct {
-	eng *gin.Engine
-	rg  *gin.RouterGroup
-	db  *pgxpool.Pool
+	eng   *gin.Engine
+	rg    *gin.RouterGroup
+	db    *pgxpool.Pool
+	cache rueidis.Client
 }
 
 func NewRouter(eng *gin.Engine, db *pgxpool.Pool) Router {
@@ -29,9 +33,9 @@ func (r *router) setGroup() {
 }
 
 func (r *router) buildRoutes() {
-	//repo := pessoa.NewRepository(r.db, r.cache)
-	//service := pessoa.NewService(repo)
-	//handler := handler.NewPessoa(service)
-	r.rg.POST("/clientes/:id/transacoes")
-	r.rg.GET("/clientes/:id/extrato")
+	repo := transacao.NewRepository(r.db)
+	service := transacao.NewService(repo)
+	handler := handler.NewTransacao(service)
+	r.rg.POST("/clientes/:id/transacoes", handler.CreateTransaction())
+	r.rg.GET("/clientes/:id/extrato", handler.GetExtrato())
 }
