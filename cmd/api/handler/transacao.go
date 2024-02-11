@@ -31,7 +31,7 @@ type TransacaoResponse struct {
 
 func (t *TransacaoRequest) Validate() error {
 
-	if (t.Tipo != "c" && t.Tipo != "d") || (len(t.Descricao) < 1 || len(t.Descricao) > 10) { // validate body
+	if (t.Tipo != "c" && t.Tipo != "d") || (len(t.Descricao) < 1 || len(t.Descricao) > 10) {
 		return InvalidDtoErr
 	}
 

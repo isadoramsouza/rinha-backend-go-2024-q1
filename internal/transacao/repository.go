@@ -35,9 +35,8 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx) // Rollback da transação em caso de erro
+	defer tx.Rollback(ctx)
 
-	// Inserção da transação
 	_, err = tx.Exec(ctx,
 		"INSERT INTO public.transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
 		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
@@ -45,7 +44,6 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 		return err
 	}
 
-	// Atualização do saldo do cliente
 	_, err = tx.Exec(ctx,
 		"UPDATE public.clientes SET saldo = $1 WHERE id = $2",
 		saldo, t.ClienteID)
@@ -53,7 +51,6 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao, sa
 		return err
 	}
 
-	// Commit da transação
 	err = tx.Commit(ctx)
 	if err != nil {
 		return err
