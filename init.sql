@@ -16,6 +16,7 @@ BEGIN
         cliente_id INTEGER NOT NULL,
         realizada_em TIMESTAMP NOT NULL DEFAULT NOW()
     );
+    CREATE INDEX idx_cliente_id ON public.transacoes (cliente_id);
 
     -- Inserção de valores iniciais na tabela clientes
     INSERT INTO clientes (nome, limite, saldo)
