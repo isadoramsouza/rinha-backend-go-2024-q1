@@ -8,7 +8,6 @@ import (
 
 type Service interface {
 	CreateTransaction(ctx context.Context, t domain.Transacao) (domain.TransacaoResponse, error)
-	GetBalance(ctx context.Context, id int) (domain.Cliente, error)
 	GetExtrato(ctx context.Context, id int) (domain.Extrato, error)
 }
 
@@ -26,12 +25,6 @@ func (s *transacaoService) CreateTransaction(ctx context.Context, t domain.Trans
 	response, err := s.repository.SaveTransaction(ctx, t)
 
 	return response, err
-}
-
-func (s *transacaoService) GetBalance(ctx context.Context, id int) (domain.Cliente, error) {
-	cliente, err := s.repository.GetBalance(ctx, id)
-
-	return cliente, err
 }
 
 func (s *transacaoService) GetExtrato(ctx context.Context, id int) (domain.Extrato, error) {

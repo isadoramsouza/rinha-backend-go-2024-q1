@@ -43,21 +43,18 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 		"INSERT INTO transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
 		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
 	if err != nil {
-		// Verificar se o erro é relacionado ao limite excedido
 		pgErr, ok := err.(*pgconn.PgError)
-		if ok && pgErr.Message == "Débito excede o limite do cliente" { // Código do erro específico para limite excedido
+		if ok && pgErr.Message == "Débito excede o limite do cliente" {
 			return domain.TransacaoResponse{}, LimitErr
 		}
-		return domain.TransacaoResponse{}, err // Retornar outros erros
+		return domain.TransacaoResponse{}, err
 	}
 
-	// Commit da transação
 	err = tx.Commit(ctx)
 	if err != nil {
 		return domain.TransacaoResponse{}, err
 	}
 
-	// Recuperar saldo e limite do cliente após a transação
 	var saldo, limite int64
 	err = r.db.QueryRow(ctx,
 		"SELECT saldo, limite FROM clientes WHERE id = $1", t.ClienteID).Scan(&saldo, &limite)
