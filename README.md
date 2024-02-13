@@ -1,6 +1,6 @@
 # Rinha de Backend 2024 Q1 - Controle de Concorrência
 
-Esta é uma aplicação em Golang desenvolvida com o framework Gin e utiliza o banco de dados PostgreSQL. A aplicação é destinada a participar da [Rinha de Backend 2024 Q1](https://github.com/zanfranceschi/rinha-de-backend-2024-q1) com o tema de controle de concorrência.
+Esta é uma aplicação em Golang desenvolvida com o framework Gin, utiliza o banco de dados PostgreSQL e NGINX. A aplicação é destinada a participar da [Rinha de Backend 2024 Q1](https://github.com/zanfranceschi/rinha-de-backend-2024-q1) com o tema de controle de concorrência.
 
 ## Funcionalidades
 
@@ -24,7 +24,7 @@ A aplicação possui dois endpoints:
 
 ## Execução
 
-Execute o seguinte comando na raiz do projeto:
+Execute o seguinte comando na raiz do projeto e faça as requisições na porta 9999.
 
 ```bash
 docker-compose up -d
