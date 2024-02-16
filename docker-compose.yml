@@ -20,7 +20,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.37'
+          cpus: '0.35'
           memory: '60MB'
     networks:
       - app-network
@@ -42,7 +42,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.37'
+          cpus: '0.35'
           memory: '60MB'
     networks:
       - app-network
@@ -79,7 +79,7 @@ services:
       resources:
         limits:
           cpus: '0.34'
-          memory: '350MB'
+          memory: '300MB'
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U admin -d rinhabackenddb'"]
       interval: 5s
@@ -98,8 +98,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.06'
-          memory: '50MB'
+          cpus: '0.26'
+          memory: '100MB'
     networks:
         - app-network
 
