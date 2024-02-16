@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   api1:
-    image: isadoramsouza/api-go-test:latest
+    image: isadoramsouza/api-go-teste:latest
     hostname: api1
     environment:
       - DB_HOST=db
