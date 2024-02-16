@@ -21,7 +21,7 @@ services:
       resources:
         limits:
           cpus: '0.15'
-          memory: '110MB'
+          memory: '100MB'
     networks:
       - app-network
 
@@ -43,7 +43,7 @@ services:
       resources:
         limits:
           cpus: '0.15'
-          memory: '110MB'
+          memory: '100MB'
     networks:
       - app-network
 
@@ -60,7 +60,7 @@ services:
       resources:
         limits:
           cpus: '0.2'
-          memory: '30MB'
+          memory: '50MB'
     networks:
       - app-network
 
