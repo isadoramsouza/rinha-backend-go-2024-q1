@@ -19,8 +19,8 @@ type router struct {
 	cache rueidis.Client
 }
 
-func NewRouter(eng *gin.Engine, db *pgxpool.Pool) Router {
-	return &router{eng: eng, db: db}
+func NewRouter(eng *gin.Engine, db *pgxpool.Pool, redis rueidis.Client) Router {
+	return &router{eng: eng, db: db, cache: redis}
 }
 
 func (r *router) MapRoutes() {
@@ -33,7 +33,7 @@ func (r *router) setGroup() {
 }
 
 func (r *router) buildRoutes() {
-	repo := transacao.NewRepository(r.db)
+	repo := transacao.NewRepository(r.db, r.cache)
 	service := transacao.NewService(repo)
 	handler := handler.NewTransacao(service)
 	r.rg.POST("/clientes/:id/transacoes", handler.CreateTransaction())

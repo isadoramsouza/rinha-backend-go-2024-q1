@@ -9,6 +9,7 @@ import (
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/cmd/api/routes"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
+	"github.com/redis/rueidis"
 )
 
 func main() {
@@ -38,9 +39,13 @@ func main() {
 
 	fmt.Println("Connected!")
 
+	rdClient, err := rueidis.NewClient(rueidis.ClientOption{InitAddress: []string{"cache:6379"}})
+	CheckError(err)
+	rdClient.B().Ping()
+
 	eng := gin.Default()
 
-	router := routes.NewRouter(eng, db)
+	router := routes.NewRouter(eng, db, rdClient)
 	router.MapRoutes()
 
 	if err := eng.Run(); err != nil {
