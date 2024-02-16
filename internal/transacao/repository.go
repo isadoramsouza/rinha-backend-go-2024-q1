@@ -43,7 +43,7 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 	var saldo int64
 	err = tx.QueryRow(
 		context.Background(),
-		"SELECT limite, saldo FROM cliente WHERE id = $1 FOR UPDATE",
+		"SELECT limite, saldo FROM clientes WHERE id = $1 FOR UPDATE",
 		t.ClienteID,
 	).Scan(&limite, &saldo)
 	if err != nil {
@@ -66,7 +66,7 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 
 	batch := &pgx.Batch{}
 	batch.Queue(
-		"UPDATE cliente SET saldo = $1 WHERE user_id = $2",
+		"UPDATE clientes SET saldo = $1 WHERE id = $2",
 		newBalance, t.ClienteID,
 	)
 	batch.Queue(
