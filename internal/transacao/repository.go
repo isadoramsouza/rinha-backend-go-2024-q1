@@ -61,35 +61,42 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 		return domain.TransacaoResponse{}, err
 	}
 
-	var valor, saldo, limite int64
-	var tipo, descricao string
-	var realizadaEm time.Time
+	var saldo, limite int64
+	var transacoes []domain.UltimaTransacao
 	query := `
-        SELECT saldo, limite, valor, tipo, descricao, realizada_em
+        SELECT c.saldo, c.limite, t.valor, t.tipo, t.descricao, t.realizada_em
         FROM clientes c
         JOIN transacoes t ON c.id = t.cliente_id
         WHERE c.id = $1
-        ORDER BY realizada_em DESC
-        LIMIT 1`
-	err = r.db.QueryRow(ctx, query, t.ClienteID).Scan(&saldo, &limite, &valor, &tipo, &descricao, &realizadaEm)
+        ORDER BY t.realizada_em DESC
+        LIMIT 10`
+	rows, err := r.db.Query(ctx, query, t.ClienteID)
 	if err != nil {
 		return domain.TransacaoResponse{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var valor int64
+		var tipo, descricao string
+		var realizadaEm time.Time
+		if err := rows.Scan(&saldo, &limite, &valor, &tipo, &descricao, &realizadaEm); err != nil {
+			return domain.TransacaoResponse{}, err
+		}
+		transacoes = append(transacoes, domain.UltimaTransacao{
+			Valor:       valor,
+			Tipo:        tipo,
+			Descricao:   descricao,
+			RealizadaEm: realizadaEm,
+		})
 	}
 
 	extrato := domain.Extrato{
 		Saldo: domain.Saldo{
-			Total:       saldo,
-			DataExtrato: realizadaEm.UTC(),
-			Limite:      limite,
+			Total:  saldo,
+			Limite: limite,
 		},
-		UltimasTransacoes: []domain.UltimaTransacao{
-			{
-				Valor:       valor,
-				Tipo:        tipo,
-				Descricao:   descricao,
-				RealizadaEm: realizadaEm,
-			},
-		},
+		UltimasTransacoes: transacoes,
 	}
 
 	// Salvando o extrato em cache

@@ -79,7 +79,7 @@ services:
       resources:
         limits:
           cpus: '0.34'
-          memory: '300MB'
+          memory: '200MB'
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U admin -d rinhabackenddb'"]
       interval: 5s
@@ -99,7 +99,7 @@ services:
       resources:
         limits:
           cpus: '0.26'
-          memory: '100MB'
+          memory: '200MB'
     networks:
         - app-network
 
