@@ -10,6 +10,7 @@ services:
       - DB_PASSWORD=rinha
       - DB_NAME=rinhabackenddb
       - DB_PORT=5432
+    network_mode: host
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     depends_on:
@@ -22,8 +23,6 @@ services:
         limits:
           cpus: '0.37'
           memory: '60MB'
-    networks:
-      - app-network
 
   api2:
     image: isadoramsouza/api-rinha-backend-go-2024-q1:latest
@@ -34,6 +33,7 @@ services:
       - DB_PASSWORD=rinha
       - DB_NAME=rinhabackenddb
       - DB_PORT=5432
+    network_mode: host
     depends_on:
       db:
         condition: service_healthy
@@ -44,11 +44,10 @@ services:
         limits:
           cpus: '0.37'
           memory: '60MB'
-    networks:
-      - app-network
 
   nginx:
     image: nginx:latest
+    network_mode: host
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -61,8 +60,6 @@ services:
         limits:
           cpus: '0.2'
           memory: '30MB'
-    networks:
-      - app-network
 
   db:
     image: postgres:latest
@@ -73,6 +70,7 @@ services:
       - POSTGRES_DB=rinhabackenddb
     ports:
       - "5432:5432"
+    network_mode: host
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
@@ -86,8 +84,3 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
-    networks:
-      - app-network
-
-networks:
-  app-network:
