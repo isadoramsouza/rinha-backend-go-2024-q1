@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   api1:
-    image: isadoramsouza/api-go-teste:latest
+    image: isadoramsouza/api-rinha-backend-go-2024:latest
     hostname: api1
     environment:
       - DB_HOST=db
@@ -20,13 +20,13 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.15'
-          memory: '100MB'
+          cpus: '0.37'
+          memory: '60MB'
     networks:
       - app-network
 
   api2:
-    image: isadoramsouza/api-go-teste:latest
+    image: isadoramsouza/api-rinha-backend-go-2024:latest
     hostname: api2
     environment:
       - DB_HOST=db
@@ -42,8 +42,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.15'
-          memory: '100MB'
+          cpus: '0.37'
+          memory: '60MB'
     networks:
       - app-network
 
@@ -60,7 +60,7 @@ services:
       resources:
         limits:
           cpus: '0.2'
-          memory: '50MB'
+          memory: '30MB'
     networks:
       - app-network
 
@@ -78,8 +78,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: '300MB'
+          cpus: '0.56'
+          memory: '400MB'
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U admin -d rinhabackenddb'"]
       interval: 5s
