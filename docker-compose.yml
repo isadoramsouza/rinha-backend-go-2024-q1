@@ -1,15 +1,17 @@
-version: '3.9'
+version: '3.5'
 
 services:
   api1:
     image: isadoramsouza/api-go-teste-1:latest
     hostname: api1
+    network_mode: "host"
     environment:
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_USER=admin
       - DB_PASSWORD=rinha
       - DB_NAME=rinhabackenddb
       - DB_PORT=5432
+      - PORT=8080
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     depends_on:
@@ -20,32 +22,30 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.15'
-          memory: '100MB'
-    networks:
-      - app-network
+          cpus: '0.37'
+          memory: '60MB'
 
   api2:
     image: isadoramsouza/api-go-teste-1:latest
     hostname: api2
+    network_mode: "host"
     environment:
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_USER=admin
       - DB_PASSWORD=rinha
       - DB_NAME=rinhabackenddb
       - DB_PORT=5432
+      - PORT=8081
     depends_on:
       db:
         condition: service_healthy
     expose:
-    - "8080"
+    - "8081"
     deploy:
       resources:
         limits:
-          cpus: '0.15'
-          memory: '100MB'
-    networks:
-      - app-network
+          cpus: '0.37'
+          memory: '60MB'
 
   nginx:
     image: nginx:latest
@@ -54,15 +54,14 @@ services:
     depends_on:
       - api1
       - api2
-    ports:
-      - "9999:9999"
+    network_mode: "host"
+    expose:
+      - "9999"
     deploy:
       resources:
         limits:
           cpus: '0.2'
-          memory: '50MB'
-    networks:
-      - app-network
+          memory: '30MB'
 
   db:
     image: postgres:latest
@@ -71,23 +70,19 @@ services:
       - POSTGRES_PASSWORD=rinha
       - POSTGRES_USER=admin
       - POSTGRES_DB=rinhabackenddb
-    ports:
-      - "5432:5432"
+    network_mode: "host"
+    expose:
+      - "5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: '300MB'
+          cpus: '0.56'
+          memory: '400MB'
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U admin -d rinhabackenddb'"]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 10s
-    networks:
-      - app-network
-
-networks:
-  app-network:

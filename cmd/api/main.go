@@ -38,7 +38,7 @@ func main() {
 
 	fmt.Println("Connected!")
 
-	eng := gin.Default()
+	eng := gin.New()
 
 	router := routes.NewRouter(eng, db)
 	router.MapRoutes()
