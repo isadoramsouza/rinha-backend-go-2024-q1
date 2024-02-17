@@ -53,8 +53,6 @@ services:
     depends_on:
       - api1
       - api2
-    ports:
-      - "9999:9999"
     deploy:
       resources:
         limits:
@@ -68,8 +66,6 @@ services:
       - POSTGRES_PASSWORD=rinha
       - POSTGRES_USER=admin
       - POSTGRES_DB=rinhabackenddb
-    ports:
-      - "5432:5432"
     network_mode: host
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
