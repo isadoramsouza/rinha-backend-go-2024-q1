@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/cmd/api/routes"
@@ -13,17 +12,17 @@ import (
 
 func main() {
 
-	var psqlconn string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
+	// var psqlconn string = fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", os.Getenv("DB_HOST"),
+	// 	os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
 
-	// psqlconn := fmt.Sprintf(
-	// 	"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-	// 	"admin",
-	// 	"rinha",
-	// 	"localhost",
-	// 	"5432",
-	// 	"rinhabackenddb",
-	// )
+	psqlconn := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		"admin",
+		"rinha",
+		"db",
+		"5432",
+		"rinhabackenddb",
+	)
 
 	poolConfig, err := pgxpool.ParseConfig(psqlconn)
 	CheckError(err)
