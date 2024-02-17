@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/internal/domain"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -38,35 +38,63 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 	}
 	defer tx.Rollback(ctx)
 
-	_, err = tx.Exec(ctx,
-		"INSERT INTO transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
-		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
+	var limite uint64
+	var saldo int64
+	err = tx.QueryRow(
+		context.Background(),
+		"SELECT limite, saldo FROM clientes WHERE id = $1 FOR UPDATE",
+		t.ClienteID,
+	).Scan(&limite, &saldo)
 	if err != nil {
-		pgErr, ok := err.(*pgconn.PgError)
-		if ok && pgErr.Message == "Débito excede o limite do cliente" {
-			return domain.TransacaoResponse{}, LimitErr
+		if err.Error() == "no rows in result set" {
+			return domain.TransacaoResponse{}, ErrNotFound
 		}
 		return domain.TransacaoResponse{}, err
 	}
 
-	err = tx.Commit(ctx)
-	if err != nil {
-		return domain.TransacaoResponse{}, err
+	var newBalance int64
+	if t.Tipo == "c" {
+		newBalance = int64(t.Valor) + saldo
+	} else {
+		newBalance = saldo - int64(t.Valor)
 	}
 
-	var saldo, limite int64
-	err = r.db.QueryRow(ctx,
-		"SELECT saldo, limite FROM clientes WHERE id = $1", t.ClienteID).Scan(&saldo, &limite)
+	if (newBalance + int64(limite)) < 0 {
+		return domain.TransacaoResponse{}, LimitErr
+	}
+
+	batch := &pgx.Batch{}
+	batch.Queue(
+		"UPDATE clientes SET saldo = $1 WHERE id = $2",
+		newBalance, t.ClienteID,
+	)
+	batch.Queue(
+		"INSERT INTO transacoes (cliente_id, valor, tipo, descricao, realizada_em) VALUES ($1, $2, $3, $4, $5)",
+		t.ClienteID, t.Valor, t.Tipo, t.Descricao, time.Now().UTC(),
+	)
+
+	s := tx.SendBatch(
+		context.Background(),
+		batch,
+	)
+	if err := s.Close(); err != nil {
+		return domain.TransacaoResponse{}, err
+	}
+	err = tx.Commit(context.Background())
 	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return domain.TransacaoResponse{}, ErrNotFound
+		}
 		return domain.TransacaoResponse{}, err
 	}
 
 	response := domain.TransacaoResponse{
-		Saldo:  saldo,
-		Limite: limite,
+		Limite: int64(limite),
+		Saldo:  newBalance,
 	}
 
 	return response, nil
+
 }
 
 func (r *repository) GetBalance(ctx context.Context, id int) (domain.Cliente, error) {
