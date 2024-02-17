@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   api1:
-    image: isadoramsouza/api-rinha-backend-go-2024-q1:latest
+    image: isadoramsouza/api-go-teste-1:latest
     hostname: api1
     environment:
       - DB_HOST=db
@@ -25,7 +25,7 @@ services:
           memory: '60MB'
 
   api2:
-    image: isadoramsouza/api-rinha-backend-go-2024-q1:latest
+    image: isadoramsouza/api-go-teste-1:latest
     hostname: api2
     environment:
       - DB_HOST=db
