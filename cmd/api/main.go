@@ -19,7 +19,7 @@ func main() {
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		"admin",
 		"rinha",
-		"db",
+		"localhost",
 		"5432",
 		"rinhabackenddb",
 	)
