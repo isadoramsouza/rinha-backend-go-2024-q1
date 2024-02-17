@@ -95,6 +95,11 @@ func (t *TransacaoController) GetExtrato() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.Atoi(c.Param("id"))
 
+		if id > 5 {
+			web.Error(c, http.StatusNotFound, ErrNotFound.Error())
+			return
+		}
+
 		extrato, err := t.transacaoService.GetExtrato(c, id)
 		if err != nil {
 			if err.Error() == ErrNotFound.Error() {
