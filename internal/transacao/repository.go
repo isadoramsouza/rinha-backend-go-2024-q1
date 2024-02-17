@@ -11,9 +11,8 @@ import (
 )
 
 var (
-	ErrDuplicateApelido = errors.New("duplicate apelido")
-	ErrNotFound         = errors.New("cliente not found")
-	LimitErr            = errors.New("limit error")
+	ErrNotFound = errors.New("cliente not found")
+	LimitErr    = errors.New("limit error")
 )
 
 type Repository interface {

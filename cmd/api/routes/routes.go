@@ -5,7 +5,6 @@ import (
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/cmd/api/handler"
 	"github.com/isadoramsouza/rinha-backend-go-2024-q1/internal/transacao"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/rueidis"
 )
 
 type Router interface {
@@ -13,10 +12,9 @@ type Router interface {
 }
 
 type router struct {
-	eng   *gin.Engine
-	rg    *gin.RouterGroup
-	db    *pgxpool.Pool
-	cache rueidis.Client
+	eng *gin.Engine
+	rg  *gin.RouterGroup
+	db  *pgxpool.Pool
 }
 
 func NewRouter(eng *gin.Engine, db *pgxpool.Pool) Router {
