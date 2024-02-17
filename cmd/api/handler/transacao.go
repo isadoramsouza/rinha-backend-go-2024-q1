@@ -61,6 +61,11 @@ func (t *TransacaoController) CreateTransaction() gin.HandlerFunc {
 
 		id, _ := strconv.Atoi(c.Param("id"))
 
+		if id > 5 {
+			web.Error(c, http.StatusNotFound, ErrNotFound.Error())
+			return
+		}
+
 		newTransacao := domain.Transacao{
 			ClienteID: id,
 			Tipo:      input.Tipo,
@@ -89,6 +94,11 @@ func (t *TransacaoController) CreateTransaction() gin.HandlerFunc {
 func (t *TransacaoController) GetExtrato() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.Atoi(c.Param("id"))
+
+		if id > 5 {
+			web.Error(c, http.StatusNotFound, ErrNotFound.Error())
+			return
+		}
 
 		extrato, err := t.transacaoService.GetExtrato(c, id)
 		if err != nil {
