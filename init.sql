@@ -26,22 +26,19 @@ VALUES
 
 CREATE OR REPLACE FUNCTION atualizar_saldo()
 RETURNS TRIGGER AS $$
-DECLARE
-    v_saldo INTEGER;
-    v_limite INTEGER;
 BEGIN
-    SELECT saldo, limite INTO v_saldo, v_limite
-    FROM clientes WHERE id = NEW.cliente_id
-    FOR UPDATE;
+    UPDATE clientes 
+    SET 
+        saldo = CASE 
+            WHEN NEW.tipo = 'd' THEN saldo - NEW.valor 
+            ELSE saldo + NEW.valor 
+        END
+    WHERE 
+        id = NEW.cliente_id 
+        AND (NEW.tipo <> 'd' OR (saldo - NEW.valor) >= -limite);
 
-    IF NEW.tipo = 'd' AND (v_saldo - NEW.valor) < -v_limite THEN
+    IF NOT FOUND THEN
         RAISE EXCEPTION 'Débito excede o limite do cliente';
-    END IF;
-
-    IF NEW.tipo = 'd' THEN
-        UPDATE clientes SET saldo = saldo - NEW.valor WHERE id = NEW.cliente_id;
-    ELSE
-        UPDATE clientes SET saldo = saldo + NEW.valor WHERE id = NEW.cliente_id;
     END IF;
 
     RETURN NEW;

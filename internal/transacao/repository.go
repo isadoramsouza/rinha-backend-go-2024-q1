@@ -33,13 +33,7 @@ func NewRepository(db *pgxpool.Pool) Repository {
 }
 
 func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (domain.TransacaoResponse, error) {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return domain.TransacaoResponse{}, err
-	}
-	defer tx.Rollback(ctx)
-
-	_, err = tx.Exec(ctx,
+	_, err := r.db.Exec(ctx,
 		"INSERT INTO transacoes(tipo, descricao, valor, cliente_id) VALUES ($1, $2, $3, $4)",
 		t.Tipo, t.Descricao, t.Valor, t.ClienteID)
 	if err != nil {
@@ -47,11 +41,6 @@ func (r *repository) SaveTransaction(ctx context.Context, t domain.Transacao) (d
 		if ok && pgErr.Message == "Débito excede o limite do cliente" {
 			return domain.TransacaoResponse{}, LimitErr
 		}
-		return domain.TransacaoResponse{}, err
-	}
-
-	err = tx.Commit(ctx)
-	if err != nil {
 		return domain.TransacaoResponse{}, err
 	}
 
