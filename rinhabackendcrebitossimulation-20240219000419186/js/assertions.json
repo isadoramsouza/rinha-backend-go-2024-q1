@@ -1,0 +1,10 @@
+{
+  "simulation": "RinhaBackendCrebitosSimulation",
+  "simulationId": "rinhabackendcrebitossimulation-20240219000419186",
+  "start": 1708301060078,
+  "description": "DESCRICAO",
+  "scenarios": ["validação concorrência transações - d", "validação concorrência saldo - -25", "validação concorrência transações - c", "validação concorrência saldo - 0", "validações", "validação HTTP 404", "extratos", "débitos", "créditos"],
+  "assertions": [
+
+  ]
+}
