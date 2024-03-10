@@ -53,8 +53,8 @@ services:
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
-      - api01
-      - api02
+      - api1
+      - api2
     restart: unless-stopped
     expose:
       - "9999"
