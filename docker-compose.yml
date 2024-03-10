@@ -49,14 +49,15 @@ services:
 
   haproxy:
     image: haproxy:2.9-alpine
+    network_mode: "host"
     volumes:
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
       - api01
       - api02
-    ports:
-      - 9999:9999
     restart: unless-stopped
+    expose:
+      - "9999"
     deploy:
       resources:
         limits:
