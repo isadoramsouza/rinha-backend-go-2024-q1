@@ -47,16 +47,16 @@ services:
           cpus: '0.37'
           memory: '60MB'
 
-  nginx:
-    image: nginx:latest
+  haproxy:
+    image: haproxy:2.9-alpine
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
-      - api1
-      - api2
-    network_mode: "host"
-    expose:
-      - "9999"
+      - api01
+      - api02
+    ports:
+      - 9999:9999
+    restart: unless-stopped
     deploy:
       resources:
         limits:
