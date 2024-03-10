@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   api1:
-    image: isadoramsouza/api-rinha-backend-go-2024-q1:latest
+    image: isadoramsouza/api-teste:latest
     hostname: api1
     network_mode: "host"
     environment:
@@ -26,7 +26,7 @@ services:
           memory: '60MB'
 
   api2:
-    image: isadoramsouza/api-rinha-backend-go-2024-q1:latest
+    image: isadoramsouza/api-teste:latest
     hostname: api2
     network_mode: "host"
     environment:
